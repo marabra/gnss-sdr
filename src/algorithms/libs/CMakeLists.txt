@@ -19,6 +19,7 @@
 if(OPENCL_FOUND)
     set(GNSS_SPLIBS_SOURCES
          galileo_e1_signal_processing.cc
+         compass_b1_signal_processing.cc
          gnss_sdr_valve.cc
          gnss_signal_processing.cc
          gps_sdr_signal_processing.cc
@@ -31,6 +32,7 @@ if(OPENCL_FOUND)
 else(OPENCL_FOUND)
     set(GNSS_SPLIBS_SOURCES
          galileo_e1_signal_processing.cc
+         compass_b1_signal_processing.cc
          gnss_sdr_valve.cc
          gnss_signal_processing.cc
          gps_sdr_signal_processing.cc

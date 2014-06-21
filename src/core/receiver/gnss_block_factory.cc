@@ -65,6 +65,7 @@
 #include "galileo_e1_pcps_8ms_ambiguous_acquisition.h"
 #include "galileo_e1_pcps_tong_ambiguous_acquisition.h"
 #include "galileo_e1_pcps_cccwsr_ambiguous_acquisition.h"
+#include "compass_b1_pcps_acquisition.h"
 #include "gps_l1_ca_dll_pll_tracking.h"
 #include "gps_l1_ca_dll_pll_optim_tracking.h"
 #include "gps_l1_ca_dll_fll_pll_tracking.h"
@@ -453,6 +454,13 @@ std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetBlock(
                     out_streams, queue));
             block = std::move(block_);
         }
+    else if (implementation.compare("Compass_B1_PCPS_Acquisition") == 0)
+            {
+    			std::cout<<"Compass_B1_PCPS_Acquisition"<<std::endl;
+                //std::unique_ptr<GNSSBlockInterface> block_(new GpsL1CaPcpsAcquisition(configuration.get(), role, in_streams,
+                //        out_streams, queue));
+                //block = std::move(block_);
+            }
 
     // TRACKING BLOCKS -------------------------------------------------------------
     else if (implementation.compare("GPS_L1_CA_DLL_PLL_Tracking") == 0)
@@ -642,10 +650,19 @@ std::unique_ptr<AcquisitionInterface> GNSSBlockFactory::GetAcqBlock(
                     out_streams, queue));
             block = std::move(block_);
         }
+    else if (implementation.compare("Compass_B1_PCPS_Acquisition") == 0)
+                {
+    				std::cout<<"Compass_B1_PCPS_Acquisition"<<std::endl;
+                    //std::unique_ptr<GNSSBlockInterface> block_(new GpsL1CaPcpsAcquisition(configuration.get(), role, in_streams,
+                      //      out_streams, queue));
+                    //block = std::move(block_);
+                }
     else
         {
             // Log fatal. This causes execution to stop.
+
             LOG(ERROR) << implementation << ": Undefined implementation for block";
+
         }
     return std::move(block);
 }
@@ -696,6 +713,7 @@ std::unique_ptr<TrackingInterface> GNSSBlockFactory::GetTrkBlock(
                     out_streams, queue));
             block = std::move(block_);
         }
+
     else
         {
             // Log fatal. This causes execution to stop.
@@ -732,6 +750,7 @@ std::unique_ptr<TelemetryDecoderInterface> GNSSBlockFactory::GetTlmBlock(
                     out_streams, queue));
             block = std::move(block_);
         }
+
     else
         {
             // Log fatal. This causes execution to stop.

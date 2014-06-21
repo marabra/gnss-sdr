@@ -556,6 +556,28 @@ void GNSSFlowgraph::set_signals_list()
                 }
         }
 
+
+    if (default_system.compare(std::string("Compass")) == 0)
+        {
+    	std::cout<<"Compass satellite in configuration file"<< std::endl;
+            /*
+             * Loop to create the list of Compass B1 signals
+             */
+            std::set<unsigned int> available_compass_prn = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+                    11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 25, 26, 27, 28,
+                    29, 30, 31, 32, 33, 34, 35, 36, 37};
+
+            for (available_gnss_prn_iter = available_compass_prn.begin();
+                    available_gnss_prn_iter != available_compass_prn.end();
+                    available_gnss_prn_iter++)
+                {
+                    available_GNSS_signals_.push_back(Gnss_Signal(Gnss_Satellite(std::string("Compass"),
+                            *available_gnss_prn_iter), std::string("1B")));
+                }
+        }
+
+
+
     /*
      * Ordering the list of signals from configuration file
      */
