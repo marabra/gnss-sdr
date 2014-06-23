@@ -54,7 +54,7 @@ const double Compass_B1_CODE_CHIP_RATE_HZ = 2.046e6;      //!< BeiDou B1 code ra
 const double Compass_B1_CODE_PERIOD = 0.001;             //!< BeiDou B1 code period [s]
 const double Compass_B1_CODE_LENGTH_CHIPS = 2046.0;    //!< BeiDou B1 code length [chips]
 const int Compass_B1_NUMBER_OF_CODES = 37;
-const double Compass_NH_SECONDARY_CODE_LENGTH = 25;  //!< Compass NH code length [chips]
+const double Compass_NH_SECONDARY_CODE_LENGTH = 20;  //!< Compass NH code length [chips]
 
 //const double Galileo_E1_FREQ_HZ = 1.57542e9;             //!< Galileo E1 carrier frequency [Hz]
 //const double Galileo_E1_CODE_CHIP_RATE_HZ = 1.023e6;    //!< Galileo E1 code rate [chips/s]

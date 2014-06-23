@@ -107,7 +107,7 @@ compass_b1_code_gen_complex_sampled(std::complex<float>* _dest, char _Signal[3],
         unsigned int _prn, signed int _fs, unsigned int _chip_shift,
         bool _secondary_flag)
   {
-
+	std::cout<< "Entered in compass_b1_code_gen_complex_sampled " << std::endl;
     // This function is based on the GNU software GPS for MATLAB in Kay Borre's book
 
     std::string _Compass_signal = _Signal;
@@ -150,29 +150,29 @@ compass_b1_code_gen_complex_sampled(std::complex<float>* _dest, char _Signal[3],
             _signal_B1 = _resampled_signal;
         }
 
-//ToDo: the folowing part shoud be activated for Compass B1, considering the secondary code NH
-//    if (_galileo_signal.rfind("1C") != std::string::npos && _galileo_signal.length() >= 2 && _secondary_flag)
-//    {
-//
-//        std::complex<float>* _signal_E1C_secondary = new std::complex<float>
-//                                                    [(int)Galileo_E1_C_SECONDARY_CODE_LENGTH
-//                                                    * _samplesPerCode];
-//
-//        for (unsigned int i = 0; i < (int)Galileo_E1_C_SECONDARY_CODE_LENGTH; i++)
-//            {
-//                for (unsigned k = 0; k < _samplesPerCode; k++)
-//                    {
-//                        _signal_E1C_secondary[i*_samplesPerCode + k] = _signal_E1[k]
-//                                * (Galileo_E1_C_SECONDARY_CODE.at(i) == '0'
-//                                   ? std::complex<float>(1,0) : std::complex<float>(-1,0));
-//                    }
-//            }
-//
-//        _samplesPerCode *= (int)Galileo_E1_C_SECONDARY_CODE_LENGTH;
-//
-//        delete[] _signal_E1;
-//        _signal_E1 = _signal_E1C_secondary;
-//    }
+    // add NH modulation on Compass primary code
+    //if (_galileo_signal.rfind("1C") != std::string::npos && _galileo_signal.length() >= 2 && _secondary_flag)
+    //{
+
+        std::complex<float>* _signal_B1_secondary = new std::complex<float>
+                                                    [(int)Compass_NH_SECONDARY_CODE_LENGTH
+                                                    * _samplesPerCode];
+
+        for (unsigned int i = 0; i < (int)Compass_NH_SECONDARY_CODE_LENGTH; i++)
+            {
+                for (unsigned k = 0; k < _samplesPerCode; k++)
+                    {
+                        _signal_B1_secondary[i*_samplesPerCode + k] = _signal_B1[k]
+                                * (Compass_NH_SECONDARY_CODE.at(i) == '0'
+                                   ? std::complex<float>(1,0) : std::complex<float>(-1,0));
+                    }
+            }
+
+        _samplesPerCode *= (int)Compass_NH_SECONDARY_CODE_LENGTH;
+
+        delete[] _signal_B1;
+        _signal_B1 = _signal_B1_secondary;
+    //}
 
     for (unsigned int i = 0; i < _samplesPerCode; i++)
         {

@@ -456,10 +456,10 @@ std::unique_ptr<GNSSBlockInterface> GNSSBlockFactory::GetBlock(
         }
     else if (implementation.compare("Compass_B1_PCPS_Acquisition") == 0)
             {
-    			std::cout<<"Compass_B1_PCPS_Acquisition"<<std::endl;
-                //std::unique_ptr<GNSSBlockInterface> block_(new GpsL1CaPcpsAcquisition(configuration.get(), role, in_streams,
-                //        out_streams, queue));
-                //block = std::move(block_);
+    			std::cout<<"Compass_B1_PCPS_Acquisition - GNSSBlockInterface"<<std::endl;
+                std::unique_ptr<GNSSBlockInterface> block_(new CompassB1PcpsAcquisition(configuration.get(), role, in_streams,
+                        out_streams, queue));
+                block = std::move(block_);
             }
 
     // TRACKING BLOCKS -------------------------------------------------------------
@@ -650,13 +650,15 @@ std::unique_ptr<AcquisitionInterface> GNSSBlockFactory::GetAcqBlock(
                     out_streams, queue));
             block = std::move(block_);
         }
+
     else if (implementation.compare("Compass_B1_PCPS_Acquisition") == 0)
-                {
-    				std::cout<<"Compass_B1_PCPS_Acquisition"<<std::endl;
-                    //std::unique_ptr<GNSSBlockInterface> block_(new GpsL1CaPcpsAcquisition(configuration.get(), role, in_streams,
-                      //      out_streams, queue));
-                    //block = std::move(block_);
-                }
+        {
+    	std::cout<<"Compass_B1_PCPS_Acquisition - AcquisitionInterface"<<std::endl;
+    	std::unique_ptr<AcquisitionInterface> block_(new CompassB1PcpsAcquisition(configuration.get(), role, in_streams,
+                    out_streams, queue));
+            block = std::move(block_);
+        }
+
     else
         {
             // Log fatal. This causes execution to stop.
@@ -714,6 +716,7 @@ std::unique_ptr<TrackingInterface> GNSSBlockFactory::GetTrkBlock(
             block = std::move(block_);
         }
 
+
     else
         {
             // Log fatal. This causes execution to stop.
@@ -744,12 +747,14 @@ std::unique_ptr<TelemetryDecoderInterface> GNSSBlockFactory::GetTlmBlock(
                     out_streams, queue));
             block = std::move(block_);
         }
-    else if (implementation.compare("SBAS_L1_Telemetry_Decoder") == 0)
+
+    	else if (implementation.compare("SBAS_L1_Telemetry_Decoder") == 0)
         {
             std::unique_ptr<TelemetryDecoderInterface> block_(new SbasL1TelemetryDecoder(configuration.get(), role, in_streams,
                     out_streams, queue));
             block = std::move(block_);
         }
+
 
     else
         {
