@@ -34,7 +34,7 @@
 #include "configuration_interface.h"
 #include "Galileo_E1.h"
 #include "GPS_L1_CA.h"
-
+#include "Compass_B1.h"
 
 using google::LogMessage;
 
@@ -75,6 +75,7 @@ SignalGenerator::SignalGenerator(ConfigurationInterface* configuration,
 
     // If Galileo signal is present                             -> vector duration = 100 ms (25 * 4 ms)
     // If there is only GPS signal (Galileo signal not present) -> vector duration = 1 ms
+    // If Compass signal is present 							-> vector duration 1 ms (verify if we must multiply it *20 (NH lenght) or not...actually Compass code repeats every 20 ms because of NH modulation)
     unsigned int vector_length = 0;
     if (std::find(system.begin(), system.end(), "E") != system.end())
     {
@@ -87,6 +88,13 @@ SignalGenerator::SignalGenerator(ConfigurationInterface* configuration,
         vector_length = round((float)fs_in
                  / (GPS_L1_CA_CODE_RATE_HZ / GPS_L1_CA_CODE_LENGTH_CHIPS));
     }
+
+    else if (std::find(system.begin(), system.end(), "C") != system.end())
+       {
+    	std::cout<<"Entered in signal generator, signal_generator.cc" << std::endl;
+           vector_length = round((float)fs_in
+                    / (Compass_B1_CODE_CHIP_RATE_HZ / Compass_B1_CODE_LENGTH_CHIPS));
+       }
 
     if (item_type_.compare("gr_complex") == 0)
         {

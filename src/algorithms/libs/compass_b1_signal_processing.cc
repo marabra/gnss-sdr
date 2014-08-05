@@ -38,8 +38,11 @@ void
 compass_b1_code_gen_int(int* _dest, char _Signal[3], signed int _prn,
         unsigned int _chip_shift)
 {
-		std::cout<< "Entered in compass_b1_code_gen_int "<< std::endl;
+	std::cout<< "(src/algorithms/libs/compass_b1_signal_processing)Entered in compass_b1_code_gen_int."<< std::endl;
     std::string _compass_signal = _Signal;
+    std::cout<< "(src/algorithms/libs/compass_b1_signal_processing) Compass signal in compass_b1_code_gen_int: " << _compass_signal << std::endl;
+    std::cout<< "(src/algorithms/libs/compass_b1_signal_processing) Compass signal in compass_b1_code_gen_int: PRN = " << _prn << std::endl;
+    std::cout<< "(src/algorithms/libs/compass_b1_signal_processing) Compass signal in compass_b1_code_gen_int: _chip_shift = " << _chip_shift << std::endl;
     signed int prn = _prn - 1;
     int index = 0;
     //int* dest = _dest;
@@ -52,10 +55,14 @@ compass_b1_code_gen_int(int* _dest, char _Signal[3], signed int _prn,
 
     if (_compass_signal.rfind("1B") != std::string::npos && _compass_signal.length() >= 2) // which is the meaning of _compass_signal.length() >= 2???
         {
+
             for (size_t i = 0; i < Compass_B1_PRIMARY_CODE[prn].length(); i++)
                 {
+
                     hex_to_binary_converter(&_dest[index],
                             Compass_B1_PRIMARY_CODE[prn].at(i));
+                    int bin_to_print=_dest[index];
+                    //std::cout<<bin_to_print;
                     index = index + 4;
                 }
 
@@ -114,7 +121,13 @@ compass_b1_code_gen_complex_sampled(std::complex<float>* _dest, char _Signal[3],
     unsigned int _samplesPerCode;
     const int _codeFreqBasis = Compass_B1_CODE_CHIP_RATE_HZ; //2.046e6 Hz
     unsigned int _codeLength = Compass_B1_CODE_LENGTH_CHIPS; //2046.0 chip
+
+    std::cout<< "(src/algorithms/libs/compass_b1_signal_processing) Compass signal in compass_b1_code_gen_complex_sampled: Compass_signal=" << _Compass_signal << std::endl;
+    std::cout<< "(src/algorithms/libs/compass_b1_signal_processing) Compass signal in compass_b1_code_gen_complex_sampled: PRN = " << _prn << std::endl;
+    std::cout<< "(src/algorithms/libs/compass_b1_signal_processing) Compass signal in compass_b1_code_gen_complex_sampled: _chip_shift = " << _chip_shift << std::endl;
+
     int primary_code_B1_chips[(int)Compass_B1_CODE_LENGTH_CHIPS];
+
     _samplesPerCode = round(_fs / (_codeFreqBasis / _codeLength));  //in this case if fs=4000000, sample per code is 4000
     //const int _samplesPerChip = (_cboc == true) ? 12 : 2;
     const int _samplesPerChip =_samplesPerCode/Compass_B1_CODE_LENGTH_CHIPS; // if fs=4000000, sample per chip is 4000/2046=1.955
@@ -182,10 +195,10 @@ compass_b1_code_gen_complex_sampled(std::complex<float>* _dest, char _Signal[3],
     delete[] _signal_B1;
 }
 
-//void
-//galileo_e1_code_gen_complex_sampled(std::complex<float>* _dest, char _Signal[3],
-//        bool _cboc, unsigned int _prn, signed int _fs, unsigned int _chip_shift)
-//{
-//    galileo_e1_code_gen_complex_sampled(_dest, _Signal, _cboc, _prn,
-//                                        _fs, _chip_shift, false);
-//}
+void
+compass_b1_code_gen_complex_sampled(std::complex<float>* _dest, char _Signal[3],
+        unsigned int _prn, signed int _fs, unsigned int _chip_shift)
+{
+    compass_b1_code_gen_complex_sampled(_dest, _Signal, _prn,
+                                        _fs, _chip_shift, false);
+}

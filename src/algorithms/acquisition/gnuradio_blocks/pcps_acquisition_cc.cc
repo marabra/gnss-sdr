@@ -86,6 +86,8 @@ pcps_acquisition_cc::pcps_acquisition_cc(
     d_num_doppler_bins = 0;
     d_bit_transition_flag = bit_transition_flag;
 
+    std::cout<< "/acquisition/gnuradio/pcps_acquisition_cc.cc/---> entered in pcps_acquisition_cc::pcps_acquisition_cc" <<std::endl;
+
     //todo: do something if posix_memalign fails
     if (posix_memalign((void**)&d_fft_codes, 16, d_fft_size * sizeof(gr_complex)) == 0){};
     if (posix_memalign((void**)&d_magnitude, 16, d_fft_size * sizeof(float)) == 0){};
@@ -103,6 +105,7 @@ pcps_acquisition_cc::pcps_acquisition_cc(
 
 pcps_acquisition_cc::~pcps_acquisition_cc()
 {
+
     if (d_num_doppler_bins > 0)
         {
             for (unsigned int i = 0; i < d_num_doppler_bins; i++)
@@ -126,6 +129,7 @@ pcps_acquisition_cc::~pcps_acquisition_cc()
 
 void pcps_acquisition_cc::set_local_code(std::complex<float> * code)
 {
+	std::cout<< "/acquisition/gnuradio/pcps_acquisition_cc.cc/---> entered in pcps_acquisition_cc::set_local_code" <<std::endl;
     memcpy(d_fft_if->get_inbuf(), code, sizeof(gr_complex)*d_fft_size);
 
     d_fft_if->execute(); // We need the FFT of local code
@@ -143,7 +147,8 @@ void pcps_acquisition_cc::set_local_code(std::complex<float> * code)
 
 void pcps_acquisition_cc::init()
 {
-    d_gnss_synchro->Acq_delay_samples = 0.0;
+	std::cout<< "/acquisition/gnuradio/pcps_acquisition_cc.cc/---> entered in pcps_acquisition_cc::init" <<std::endl;
+	d_gnss_synchro->Acq_delay_samples = 0.0;
     d_gnss_synchro->Acq_doppler_hz = 0.0;
     d_gnss_synchro->Acq_samplestamp_samples = 0;
     d_mag = 0.0;
@@ -156,6 +161,7 @@ void pcps_acquisition_cc::init()
          doppler += d_doppler_step)
     {
         d_num_doppler_bins++;
+
     }
 
     // Create the carrier Doppler wipeoff signals
@@ -168,13 +174,14 @@ void pcps_acquisition_cc::init()
             int doppler = -(int)d_doppler_max + d_doppler_step*doppler_index;
             complex_exp_gen_conj(d_grid_doppler_wipeoffs[doppler_index],
                                  d_freq + doppler, d_fs_in, d_fft_size);
-        }
+       }
 }
 
 int pcps_acquisition_cc::general_work(int noutput_items,
         gr_vector_int &ninput_items, gr_vector_const_void_star &input_items,
         gr_vector_void_star &output_items)
 {
+	std::cout<< "/acquisition/gnuradio/pcps_acquisition_cc.cc/---> entered in pcps_acquisition_cc::general_work" <<std::endl;
     /*
      * By J.Arribas, L.Esteve and M.Molina
      * Acquisition strategy (Kay Borre book + CFAR threshold):
@@ -187,7 +194,7 @@ int pcps_acquisition_cc::general_work(int noutput_items,
      */
 
     int acquisition_message = -1; //0=STOP_CHANNEL 1=ACQ_SUCCEES 2=ACQ_FAIL
-
+    std::cout<< " entered in acquisition general work" << std::endl;
     switch (d_state)
     {
     case 0:

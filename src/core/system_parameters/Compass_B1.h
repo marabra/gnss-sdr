@@ -55,6 +55,13 @@ const double Compass_B1_CODE_PERIOD = 0.001;             //!< BeiDou B1 code per
 const double Compass_B1_CODE_LENGTH_CHIPS = 2046.0;    //!< BeiDou B1 code length [chips]
 const int Compass_B1_NUMBER_OF_CODES = 37;
 const double Compass_NH_SECONDARY_CODE_LENGTH = 20;  //!< Compass NH code length [chips]
+const int Compass_D1_TELEMETRY_RATE_BITS_SECOND = 50;   //!< NAV message bit rate [bits/s] 50 pbs
+const int Compass_D1_TELEMETRY_BITS_DURATION_ms = 20;   //!< each bit of the navigation message lasts 20 ms
+const int Compass_SUPERFRAME_BIT = 36000;  				//!< Number of bits per SUPERFRAME = 36000 and lasts 12 minutes
+const int Compass_FRAME_BIT = 1500;  				//!< Number of bits per FRAME = 1500 and lasts 30 sec (each superframe is composed of 24 frame)
+const int Compass_SUBFRAME_BIT = 300;  				//!< Number of bits per SUBFRAME = 300 and lasts 6 sec (each frame is composed of 5 subframe)
+const int Compass_WORD_BIT = 30;  				//!< Number of bits per WORD = 30 and lasts 0.6 sec (each subframe is composed of 10 words)
+
 
 //const double Galileo_E1_FREQ_HZ = 1.57542e9;             //!< Galileo E1 carrier frequency [Hz]
 //const double Galileo_E1_CODE_CHIP_RATE_HZ = 1.023e6;    //!< Galileo E1 code rate [chips/s]

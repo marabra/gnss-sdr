@@ -122,11 +122,15 @@ void Gnss_Satellite::set_system(std::string system_)
 
     if(it != system_set.end())
         {
-            system = system_;
+
+    	    system = system_;
+    	    std::cout<<"System found: " << system << std::endl;
+
         }
     else
         {
             DLOG(INFO) << "System " << system_ << " is not defined {GPS, GLONASS, SBAS, Galileo, Compass}. Initialization?";
+            std::cout<< "System " << system_ << " is not defined {GPS, GLONASS, SBAS, Galileo, Compass}. Initialization?";
             system =  std::string("");
         }
 }
@@ -191,6 +195,20 @@ void Gnss_Satellite::set_PRN(unsigned int PRN_)
                 PRN = PRN_;
             }
         }
+    else if (system.compare("Compass") == 0)
+           {
+               if (PRN_ < 1 or PRN_ > 37)
+                   {
+                       DLOG(INFO) << "This PRN is not defined";
+                       PRN = 0;
+                   }
+               else
+                   {
+                       PRN = PRN_;
+
+                   }
+           }
+
     else
         {
             DLOG(INFO) << "System " << system << " is not defined";
@@ -211,21 +229,20 @@ unsigned int Gnss_Satellite::get_PRN() const
 }
 
 
-
-
-
-
 std::string Gnss_Satellite::get_system() const
 {
     // Get the satellite system {"GPS", "GLONASS", "SBAS", "Galileo", "Compass"}
     std::string system_;
     system_ = system;
+    std::cout<<"System in get_system (src/core/system_parameters/gnss_satellit.c = " << system << std::endl;
+
     return system_;
 }
 
 std::string Gnss_Satellite::get_system_short() const
 {
     // Get the satellite system {"G", "R", "S", "E", "C"}
+	std::cout<<"Short System in get_system_short (src/core/system_parameters/gnss_satellit.c = " << satelliteSystem.at(system) << std::endl;
     return satelliteSystem.at(system);
 }
 

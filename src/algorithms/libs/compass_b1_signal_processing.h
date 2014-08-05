@@ -53,7 +53,8 @@ void compass_b1_code_gen_int(int* _dest, char _Signal[3], signed int _prn,
 void compass_b1_code_gen_complex_sampled(std::complex<float>* _dest, char _Signal[3],
         unsigned int _prn, signed int _fs, unsigned int _chip_shift, bool _secondary_flag);
 
-
+void compass_b1_code_gen_complex_sampled(std::complex<float>* _dest, char _Signal[3],
+        unsigned int _prn, signed int _fs, unsigned int _chip_shift);
 
 //FROM GALILEO
 //void galileo_code_gen_complex_sampled(std::complex<float>* _dest, char _Signal[3],

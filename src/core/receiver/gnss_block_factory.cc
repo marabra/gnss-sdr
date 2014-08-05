@@ -653,7 +653,7 @@ std::unique_ptr<AcquisitionInterface> GNSSBlockFactory::GetAcqBlock(
 
     else if (implementation.compare("Compass_B1_PCPS_Acquisition") == 0)
         {
-    	std::cout<<"Compass_B1_PCPS_Acquisition - AcquisitionInterface"<<std::endl;
+    	std::cout<<"Compass_B1_PCPS_Acquisition, set in src/core/receiver/gnss_block_factory"<<std::endl;
     	std::unique_ptr<AcquisitionInterface> block_(new CompassB1PcpsAcquisition(configuration.get(), role, in_streams,
                     out_streams, queue));
             block = std::move(block_);

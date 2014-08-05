@@ -33,6 +33,7 @@
 #include "signal_generator_c.h"
 #include "gps_sdr_signal_processing.h"
 #include "galileo_e1_signal_processing.h"
+#include "compass_b1_signal_processing.h"
 #include "nco_lib.h"
 
 
@@ -82,6 +83,8 @@ void signal_generator_c::init()
 
     // True if Galileo satellites are present
     bool gallileo_signal = std::find(system_.begin(), system_.end(), "E") != system_.end();
+    // True if Compass satellites are present
+    bool compass_signal = std::find(system_.begin(), system_.end(), "C") != system_.end();
 
     for (unsigned int sat = 0; sat < num_sats_; sat++)
         {
@@ -105,6 +108,16 @@ void signal_generator_c::init()
                     num_of_codes_per_vector_.push_back((int)Galileo_E1_C_SECONDARY_CODE_LENGTH);
                     data_bit_duration_ms_.push_back(1e3/Galileo_E1_B_SYMBOL_RATE_BPS);
                 }
+            else if (system_[sat] == "C")
+                {
+            	std::cout<< "Sistem cC" << std::endl;
+                    samples_per_code_.push_back(round((float)fs_in_ / (Compass_B1_CODE_CHIP_RATE_HZ
+                                        / Compass_B1_CODE_LENGTH_CHIPS )));
+
+                    num_of_codes_per_vector_.push_back((int)Compass_NH_SECONDARY_CODE_LENGTH); // TO BE CONFIRMED
+                    data_bit_duration_ms_.push_back(1e3/Compass_D1_TELEMETRY_RATE_BITS_SECOND);
+                }
+
         }
 
     random_ = new gr::random();
@@ -208,6 +221,57 @@ void signal_generator_c::generate_codes()
                                 }
                         }
                 }
+            else if (system_[sat] == "C")
+                {
+                    // Generate one code-period of E1B signal
+                    //bool cboc = true;
+                    char signal[3];
+                    strcpy(signal, "1B");
+
+                    compass_b1_code_gen_complex_sampled(code, signal, PRN_[sat], fs_in_,
+                                    (int)Compass_B1_CODE_LENGTH_CHIPS  - delay_chips_[sat]); //this function doesn't apply NH modulation in the signal
+
+                    // Obtain the desired CN0 assuming that Pn = 1.
+                    if (noise_flag_)
+                        {
+                            for (unsigned int i = 0; i < samples_per_code_[sat]; i++)
+                                {
+                                    code[i] *= sqrt(pow(10, CN0_dB_[sat] / 10) / BW_BB_ / 2);
+                                }
+                        }
+
+                    // Concatenate "num_of_codes_per_vector_" codes
+                    for (unsigned int i = 0; i < num_of_codes_per_vector_[sat]; i++)
+                        {
+                            memcpy(&(sampled_code_data_[sat][i*samples_per_code_[sat]]),
+                                   code, sizeof(gr_complex)*samples_per_code_[sat]);
+                        }
+
+                    // Generate E1C signal (25 code-periods, with secondary code)
+                    if (posix_memalign((void**)&(sampled_code_pilot_[sat]), 16,
+                                       vector_length_ * sizeof(gr_complex)) == 0){};
+
+                    strcpy(signal, "1C");
+
+                    compass_b1_code_gen_complex_sampled(sampled_code_pilot_[sat], signal, PRN_[sat], fs_in_,
+                                                        (int)Compass_B1_CODE_LENGTH_CHIPS-delay_chips_[sat], true); //this function apply NH moulation
+
+                    // Obtain the desired CN0 assuming that Pn = 1.
+                    if (noise_flag_)
+                        {
+                            for (unsigned int i = 0; i < vector_length_; i++)
+                                {
+                                    sampled_code_pilot_[sat][i] *= sqrt(pow(10, CN0_dB_[sat] / 10) / BW_BB_ / 2);
+                                }
+                        }
+                }
+
+
+
+
+
+
+
         }
 }
 
@@ -321,6 +385,43 @@ int signal_generator_c::general_work (int noutput_items,
                                                 % data_bit_duration_ms_[sat];
                         }
                 }
+
+
+
+            else if (system_[sat] == "C")
+                {
+                    unsigned int delay_samples = (delay_chips_[sat] % (int)Compass_B1_CODE_LENGTH_CHIPS)
+                                                    * samples_per_code_[sat] / Compass_B1_CODE_LENGTH_CHIPS;
+
+                    for (i = 0; i < num_of_codes_per_vector_[sat]; i++)
+                        {
+                            for (k = 0; k < delay_samples; k++)
+                                {
+                                    out[out_idx] += (sampled_code_data_[sat][out_idx] * current_data_bits_[sat] //decide how to compute this
+                                                    -  sampled_code_pilot_[sat][out_idx])
+                                                    * complex_phase_[out_idx];
+                                    out_idx++;
+                                }
+
+                            if (ms_counter_[sat] == 0 && data_flag_)
+                                {
+                                    // New random data bit
+                                    current_data_bits_[sat] = gr_complex((rand()%2) == 0 ? 1 : -1, 0);
+                                }
+
+                            for (k = delay_samples; k < samples_per_code_[sat]; k++)
+                                {
+                                    out[out_idx] += (sampled_code_data_[sat][out_idx] * current_data_bits_[sat] //decide how to compute this
+                                                    - sampled_code_pilot_[sat][out_idx])
+                                                    * complex_phase_[out_idx];
+                                    out_idx++;
+                                }
+
+                            ms_counter_[sat] = (ms_counter_[sat] + (int)round(1e3*Compass_B1_CODE_PERIOD))
+                                                % data_bit_duration_ms_[sat];
+                        }
+                }
+
         }
 
     if (noise_flag_)

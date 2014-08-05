@@ -62,13 +62,16 @@ CompassB1PcpsAcquisition::CompassB1PcpsAcquisition(
             default_item_type);
 
     fs_in_ = configuration_->property("GNSS-SDR.internal_fs_hz", 4000000);
+    std::cout << "(compass_b1_pcps_ambiguous_acquisition) fs_in = "<< fs_in_ <<std::endl;
     if_ = configuration_->property(role + ".ifreq", 0);
+    std::cout << "(compass_b1_pcps_ambiguous_acquisition) if_ = "<< if_ <<std::endl;
     dump_ = configuration_->property(role + ".dump", false);
     shift_resolution_ = configuration_->property(role + ".doppler_max", 15);
+    std::cout << "(compass_b1_pcps_ambiguous_acquisition) shift_resolution_ = "<< shift_resolution_ <<std::endl;
     sampled_ms_ = configuration_->property(role + ".coherent_integration_time_ms", 1);
-
+    std::cout << "(compass_b1_pcps_ambiguous_acquisition) sampled_ms_ = "<< sampled_ms_ <<std::endl;
     bit_transition_flag_ = configuration_->property(role + ".bit_transition_flag", false);
-
+    std::cout << "(compass_b1_pcps_ambiguous_acquisition) bit_transition_flag_  = "<< bit_transition_flag_  <<std::endl;
     if (!bit_transition_flag_)
         {
             max_dwells_ = configuration_->property(role + ".max_dwells", 1);
@@ -84,18 +87,20 @@ CompassB1PcpsAcquisition::CompassB1PcpsAcquisition(
     //--- Find number of samples per spreading code (1 ms)-------------------------
     code_length_ = round(fs_in_
             / (Compass_B1_CODE_CHIP_RATE_HZ /Compass_B1_CODE_LENGTH_CHIPS));
-
+    std::cout << "(compass_b1_pcps_ambiguous_acquisition) code_length_  = "<< code_length_  <<std::endl;
     vector_length_ = code_length_ * sampled_ms_;
-
+    std::cout << "(compass_b1_pcps_ambiguous_acquisition) vector_length_  = "<< vector_length_  <<std::endl;
     code_= new gr_complex[vector_length_];
+    std::cout << "(compass_b1_pcps_ambiguous_acquisition) code_  = "<< &code_  <<std::endl;
 
     if (item_type_.compare("gr_complex") == 0)
     {
         item_size_ = sizeof(gr_complex);
+        std::cout<< "Call to pcsp_make_acquisition_cc"<<std::endl;
         acquisition_cc_ = pcps_make_acquisition_cc(sampled_ms_, max_dwells_,
                 shift_resolution_, if_, fs_in_, code_length_, code_length_,
                 bit_transition_flag_, queue_, dump_, dump_filename_);
-
+        std::cout<< "After Call to pcsp_make_acquisition_cc"<<std::endl;
         stream_to_vector_ = gr::blocks::stream_to_vector::make(item_size_, vector_length_);
 
         DLOG(INFO) << "stream_to_vector(" << stream_to_vector_->unique_id()
@@ -221,7 +226,7 @@ void CompassB1PcpsAcquisition::set_local_code()
     {
         std::complex<float>* code = new std::complex<float>[code_length_];
         //ToDo write this function according Compass signal characteristic
-
+        std::cout<< "enterd in set_local_code in acqusition/adapters/compass_b1_pcps_acquisition"<<std::endl;
         compass_b1_code_gen_complex_sampled(code, gnss_synchro_->Signal,
                             gnss_synchro_->PRN, fs_in_, 0, false);
 
